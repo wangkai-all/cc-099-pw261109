@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>点域采集 · Pointwise Delivery</title>
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+      crossorigin=""
+    />
+    <link rel="stylesheet" href="/src/style.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <div class="brand">
+        <span class="logo">◱</span>
+        <div>
+          <h1>点域采集</h1>
+          <p>框选区域 · 分块分页 WFS 采集 · 版本合并 · GeoJSON 导出</p>
+        </div>
+      </div>
+      <div class="topbar-status" id="crs-banner"></div>
+    </header>
+
+    <main class="layout">
+      <aside class="panel" id="control-panel">
+        <section class="card">
+          <h2>1. 服务配置</h2>
+          <label class="field">
+            <span>示例 WFS 端点</span>
+            <select id="profile-select"></select>
+          </label>
+          <p class="hint" id="profile-note"></p>
+          <label class="check">
+            <input type="checkbox" id="force-wrong-axis" />
+            故意按错误轴顺序（yx）发起查询
+          </label>
+          <label class="field">
+            <span>分块尺寸</span>
+            <select id="chunk-size-select"></select>
+          </label>
+          <label class="field">
+            <span>并发块数</span>
+            <input type="number" id="concurrency" value="2" min="1" max="6" />
+          </label>
+          <button class="btn ghost" id="locate-btn">定位到演示数据集</button>
+        </section>
+
+        <section class="card">
+          <h2>2. 框选区域</h2>
+          <p class="hint">在地图上按住鼠标拖出矩形；也可以直接用下方按钮选择整个演示范围。</p>
+          <button class="btn" id="select-extent-btn">框选整个演示范围</button>
+          <div class="bbox-readout" id="bbox-readout">尚未选择区域</div>
+        </section>
+
+        <section class="card">
+          <h2>3. 采集控制</h2>
+          <div class="btn-row">
+            <button class="btn primary" id="start-btn" disabled>开始采集</button>
+            <button class="btn warn" id="pause-btn" disabled>暂停</button>
+            <button class="btn" id="resume-btn" disabled>继续</button>
+          </div>
+          <div class="btn-row">
+            <button class="btn ghost" id="retry-btn" disabled>只重采失败/截断块</button>
+            <button class="btn ghost" id="reset-btn">重置</button>
+          </div>
+          <div id="global-message" class="global-message" hidden></div>
+        </section>
+
+        <section class="card">
+          <h2>分块状态</h2>
+          <ul class="legend" id="legend"></ul>
+          <div class="chunk-summary" id="chunk-summary"></div>
+          <div class="chunk-list" id="chunk-list"></div>
+        </section>
+
+        <section class="card">
+          <h2>导出</h2>
+          <div class="btn-row">
+            <button class="btn primary" id="export-features-btn" disabled>导出要素 GeoJSON</button>
+            <button class="btn" id="export-chunks-btn" disabled>导出分块状态</button>
+          </div>
+          <p class="hint">导出的要素仅包含与原始选区相交者；每个要素带完整来源链与版本选取依据。</p>
+        </section>
+      </aside>
+
+      <section class="map-wrap">
+        <div id="map"></div>
+        <div class="map-overlay" id="map-overlay" hidden></div>
+      </section>
+
+      <aside class="panel" id="result-panel">
+        <section class="card">
+          <h2>采集结果</h2>
+          <div class="stat-grid" id="stat-grid"></div>
+          <div class="filter-row">
+            <input type="text" id="feature-filter" placeholder="按名称 / 稳定标识过滤…" />
+          </div>
+          <div class="feature-list" id="feature-list"></div>
+        </section>
+
+        <section class="card" id="detail-card" hidden>
+          <h2>要素来源链</h2>
+          <div id="feature-detail"></div>
+        </section>
+      </aside>
+    </main>
+
+    <script type="module" src="/src/app.ts"></script>
+  </body>
+</html>
